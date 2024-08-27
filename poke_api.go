@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 )
 
 const (
@@ -22,10 +23,12 @@ type RespShallowLocations struct {
 
 type client struct {
 	client http.Client
+	cache  Cache
 }
 
-func newClient() client {
+func newClient(cacheInterval time.Duration) client {
 	return client{
+		cache:  NewCache(cacheInterval),
 		client: http.Client{},
 	}
 }
@@ -34,6 +37,16 @@ func (c *client) ListLocations(pageURL *string) (RespShallowLocations, error) {
 	url := baseURL + "/location-area"
 	if pageURL != nil {
 		url = *pageURL
+	}
+
+	if val, ok := c.cache.Get(url); ok {
+		locationsResp := RespShallowLocations{}
+		err := json.Unmarshal(val, &locationsResp)
+		if err != nil {
+			return RespShallowLocations{}, err
+		}
+
+		return locationsResp, nil
 	}
 
 	req, err := http.NewRequest("GET", url, nil)

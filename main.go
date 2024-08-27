@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 )
 
 type config struct {
@@ -14,12 +15,12 @@ type config struct {
 
 func main() {
 	appConfig := config{
-		apiClient: newClient(),
+		apiClient: newClient(time.Minute * 5),
 	}
 
 	commandList := availableCommands()
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("Pokedex CLI\n")
+	fmt.Print("Pokedex CLI\n\n")
 	for {
 		fmt.Print("pokedex > ")
 		scanner.Scan()

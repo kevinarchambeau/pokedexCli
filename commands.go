@@ -79,7 +79,7 @@ func commandExit(cfg *config) error {
 }
 
 func commandHelp(cfg *config) error {
-	fmt.Println("Available commands: \n")
+	fmt.Print("Available commands: \n\n")
 	for _, command := range availableCommands() {
 		fmt.Println(command.name + ": " + command.description)
 	}
