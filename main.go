@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -25,8 +26,15 @@ func main() {
 		fmt.Print("pokedex > ")
 		scanner.Scan()
 		input := scanner.Text()
-		if _, ok := commandList[input]; ok {
-			err := commandList[input].callback(&appConfig)
+		args := []string{}
+		words := cleanInput(input)
+		command := words[0]
+		if len(input) > 1 {
+			args = words[1:]
+		}
+
+		if _, ok := commandList[command]; ok {
+			err := commandList[command].callback(&appConfig, args...)
 			if err != nil {
 				fmt.Printf("error occurred: %v", err)
 			}
@@ -35,4 +43,10 @@ func main() {
 		}
 	}
 
+}
+
+func cleanInput(text string) []string {
+	output := strings.ToLower(text)
+	words := strings.Fields(output)
+	return words
 }
