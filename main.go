@@ -12,11 +12,13 @@ type config struct {
 	apiClient     client
 	nextLocations *string
 	prevLocations *string
+	caught        map[string]Pokemon
 }
 
 func main() {
 	appConfig := config{
 		apiClient: newClient(time.Minute * 5),
+		caught:    map[string]Pokemon{},
 	}
 
 	commandList := availableCommands()

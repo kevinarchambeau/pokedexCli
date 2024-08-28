@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 )
 
@@ -39,7 +40,40 @@ func availableCommands() map[string]cliCommand {
 			description: "Explore a location",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch <pokemon>",
+			description: "attempts to catch a pokemon",
+			callback:    commandCatch,
+		},
 	}
+}
+
+func commandCatch(cfg *config, args ...string) error {
+	if len(args) != 1 {
+		return errors.New("no pokemon provided")
+	}
+
+	name := args[0]
+	pokemon, err := cfg.apiClient.GetPokemonInfo(name)
+	if err != nil {
+		return err
+	}
+
+	if _, ok := cfg.caught[pokemon.Name]; ok {
+		fmt.Printf("You've already caught a %s\n", pokemon.Name)
+		return nil
+	}
+
+	chance := rand.Intn(pokemon.BaseExperience)
+	fmt.Printf("Throwing a pokeball at %s\n", pokemon.Name)
+	if chance >= pokemon.BaseExperience/2 {
+		fmt.Printf("You caught a %s\n", pokemon.Name)
+		cfg.caught[pokemon.Name] = pokemon
+	} else {
+		fmt.Printf("%s ran away\n", pokemon.Name)
+	}
+
+	return nil
 }
 
 func commandExplore(cfg *config, args ...string) error {
