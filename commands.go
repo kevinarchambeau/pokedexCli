@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"os"
 )
 
@@ -45,7 +44,39 @@ func availableCommands() map[string]cliCommand {
 			description: "attempts to catch a pokemon",
 			callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect <pokemon>",
+			description: "gives pokemon stats (if caught)",
+			callback:    commandInspect,
+		},
 	}
+}
+
+func commandInspect(cfg *config, args ...string) error {
+	if len(args) != 1 {
+		return errors.New("no pokemon provided")
+	}
+
+	name := args[0]
+
+	pokemon, ok := cfg.caught[name]
+	if !ok {
+		fmt.Printf("You don't have a %s\n", name)
+		return nil
+	}
+
+	fmt.Printf("Name: %s\n", pokemon.Name)
+	fmt.Printf("Height: %v\n", pokemon.Height)
+	fmt.Println("Stats: ")
+	for _, stat := range pokemon.Stats {
+		fmt.Printf("  %s: %v\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Println("Type/s:")
+	for _, pokeType := range pokemon.Types {
+		fmt.Printf("  %s\n", pokeType.Type.Name)
+	}
+
+	return nil
 }
 
 func commandCatch(cfg *config, args ...string) error {
@@ -64,14 +95,16 @@ func commandCatch(cfg *config, args ...string) error {
 		return nil
 	}
 
-	chance := rand.Intn(pokemon.BaseExperience)
+	//chance := rand.Intn(pokemon.BaseExperience)
 	fmt.Printf("Throwing a pokeball at %s\n", pokemon.Name)
-	if chance >= pokemon.BaseExperience/2 {
-		fmt.Printf("You caught a %s\n", pokemon.Name)
-		cfg.caught[pokemon.Name] = pokemon
-	} else {
-		fmt.Printf("%s ran away\n", pokemon.Name)
-	}
+	fmt.Printf("You caught a %s\n", pokemon.Name)
+	cfg.caught[pokemon.Name] = pokemon
+	//if chance >= pokemon.BaseExperience/2 {
+	//	fmt.Printf("You caught a %s\n", pokemon.Name)
+	//	cfg.caught[pokemon.Name] = pokemon
+	//} else {
+	//	fmt.Printf("%s ran away\n", pokemon.Name)
+	//}
 
 	return nil
 }
