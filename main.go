@@ -38,7 +38,7 @@ func main() {
 		if _, ok := commandList[command]; ok {
 			err := commandList[command].callback(&appConfig, args...)
 			if err != nil {
-				fmt.Printf("error occurred: %v", err)
+				fmt.Printf("error occurred: %v\n", err)
 			}
 		} else {
 			fmt.Println("invalid command")
