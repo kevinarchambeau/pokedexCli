@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 )
 
@@ -114,16 +115,14 @@ func commandCatch(cfg *config, args ...string) error {
 		return nil
 	}
 
-	//chance := rand.Intn(pokemon.BaseExperience)
-	fmt.Printf("Throwing a pokeball at %s\n", pokemon.Name)
-	fmt.Printf("You caught a %s\n", pokemon.Name)
+	chance := rand.Intn(pokemon.BaseExperience)
 	cfg.caught[pokemon.Name] = pokemon
-	//if chance >= pokemon.BaseExperience/2 {
-	//	fmt.Printf("You caught a %s\n", pokemon.Name)
-	//	cfg.caught[pokemon.Name] = pokemon
-	//} else {
-	//	fmt.Printf("%s ran away\n", pokemon.Name)
-	//}
+	if chance >= pokemon.BaseExperience/2 {
+		fmt.Printf("You caught a %s\n", pokemon.Name)
+		cfg.caught[pokemon.Name] = pokemon
+	} else {
+		fmt.Printf("%s ran away\n", pokemon.Name)
+	}
 
 	return nil
 }
@@ -141,7 +140,7 @@ func commandExplore(cfg *config, args ...string) error {
 	fmt.Printf("Exploring %s\n", location.Name)
 	fmt.Println("Found pokemon:")
 	for _, enc := range location.PokemonEncounters {
-		fmt.Printf(" - %s\n", enc.Pokemon.Name)
+		fmt.Printf(" %s\n", enc.Pokemon.Name)
 	}
 
 	return nil
